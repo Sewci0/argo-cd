@@ -123,6 +123,25 @@ RUN make cli server controller repo-server argocd-util && \
 ####################################################################################################
 # Final image
 ####################################################################################################
-FROM argocd-base
+FROM argocd-base as argocd-final
 COPY --from=argocd-build /go/src/github.com/argoproj/argo-cd/dist/argocd* /usr/local/bin/
 COPY --from=argocd-ui ./src/dist/app /shared/app
+
+
+####################################################################################################
+# iProov modification
+####################################################################################################
+FROM argocd-final
+
+USER root
+RUN apt-get update \
+ && apt-get install -y curl apt-transport-https ca-certificates gnupg  \
+ && curl -o /usr/local/bin/sops -L https://github.com/mozilla/sops/releases/download/3.2.0/sops-3.2.0.linux \
+ && chmod +x /usr/local/bin/sops \
+ && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" >> /etc/apt/sources.list.d/google-cloud-sdk.list \
+ && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+ && apt-get update \
+ && apt-get install -y google-cloud-sdk
+USER argocd
+RUN helm plugin install https://github.com/futuresimple/helm-secrets \
+ && helm repo add stable https://kubernetes-charts.storage.googleapis.com

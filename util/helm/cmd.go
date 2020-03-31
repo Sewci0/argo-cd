@@ -198,7 +198,7 @@ func (c *Cmd) template(chartPath string, opts *TemplateOpts) (string, error) {
 		}
 	}
 
-	args := []string{"template", chartPath, c.templateNameArg, opts.Name}
+	args := []string{"secrets template", chartPath, c.templateNameArg, opts.Name}
 
 	if opts.Namespace != "" {
 		args = append(args, "--namespace", opts.Namespace)

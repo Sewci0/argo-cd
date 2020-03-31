@@ -23,7 +23,7 @@ var (
 	// HelmV3 represents helm V3 specific settings
 	HelmV3 = HelmVer{
 		binaryName:              "helm",
-		templateNameArg:         "--name-template",
+		templateNameArg:         "-n",
 		kubeVersionSupported:    false,
 		showCommand:             "show",
 		pullCommand:             "pull",
